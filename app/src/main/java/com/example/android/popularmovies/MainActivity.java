@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.Models.Movie;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieManager.MovieManagerListener {
@@ -26,8 +28,10 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Selected item " + i, Toast.LENGTH_LONG);
-                toast.show();
+                Movie m = (Movie) gridView.getAdapter().getItem(i);
+                Intent startMovieDetails = new Intent(view.getContext(), MovieDetailsActivity.class);
+                startMovieDetails.putExtra("Movie", m);
+                startActivity(startMovieDetails);
             }
         });
 

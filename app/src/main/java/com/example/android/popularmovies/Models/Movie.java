@@ -1,16 +1,32 @@
 package com.example.android.popularmovies.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by makle on 29/01/2017.
  */
 
-public class Movie {
+public class Movie implements Parcelable {
     String posterPath;
     String overview;
     String releaseDate;
     int id;
     String title;
     double voteAvg;
+
+    public Movie() {
+        this.posterPath = posterPath;
+    }
+
+    private Movie(Parcel in) {
+        posterPath = in.readString();
+        overview = in.readString();
+        releaseDate = in.readString();
+        id = in.readInt();
+        title = in.readString();
+        voteAvg = in.readDouble();
+    }
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
@@ -61,4 +77,30 @@ public class Movie {
     }
 
 
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(posterPath);
+        parcel.writeString(overview);
+        parcel.writeString(releaseDate);
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeDouble(voteAvg);
+    }
 }

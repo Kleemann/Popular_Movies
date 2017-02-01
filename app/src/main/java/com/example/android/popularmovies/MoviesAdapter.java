@@ -41,7 +41,7 @@ public class MoviesAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return mMovies.get(i);
     }
 
     @Override
