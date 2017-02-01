@@ -58,7 +58,7 @@ public class MovieManager {
     private URL buildURL() {
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendPath(mSorting)
-                .appendQueryParameter(API_PARAM, "3316f56d2fce80d099bd8b9497b4a544").build();
+                .appendQueryParameter(API_PARAM, "YOUR_API_KEY").build();
         URL url = null;
         try {
             url = new URL(builtUri.toString());
