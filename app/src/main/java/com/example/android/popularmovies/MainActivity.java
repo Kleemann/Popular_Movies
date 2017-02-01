@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
 
     MovieManager manager = new MovieManager(this);
     GridView gridView;
+    private String mCurrentSorting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +38,32 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
             }
         });
 
-        manager.getMovies(MovieSorting.TOP_RATED);
+        getMovies(MovieSorting.TOP_RATED);
+    }
+
+    private void getMovies(String sorting) {
+        if (sorting.equals(mCurrentSorting) ) {return;}
+        mCurrentSorting = sorting;
+        manager.getMovies(mCurrentSorting);
     }
 
     @Override
     public void moviesFetches(ArrayList<Movie> movies) {
         final MoviesAdapter adapter = new MoviesAdapter(this, movies);
         gridView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_sort, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int selected = item.getItemId();
+        if (selected == R.id.menuSortPopular) {getMovies(MovieSorting.POPULAR);}
+        else if (selected == R.id.menuSortTop){getMovies(MovieSorting.TOP_RATED);}
+        return true;
     }
 }
