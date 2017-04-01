@@ -7,11 +7,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.Models.Movie;
+import com.example.android.popularmovies.Models.Review;
+import com.example.android.popularmovies.Models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+import java.net.URL;
+import java.util.ArrayList;
+
+public class MovieDetailsActivity extends AppCompatActivity implements MovieManager.MovieManagerDetailsListener {
 
     Movie mMovie;
     ImageView mPosterImageView;
@@ -19,7 +24,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView mYeatTextView;
     TextView mOverviewTextView;
     TextView mAvgVote;
-
+    MovieManager manager = new MovieManager(null, this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +38,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mOverviewTextView = (TextView) findViewById(R.id.overview);
         mAvgVote = (TextView) findViewById(R.id.avgVote);
         configure();
+
+       getMovieDetails();
+    }
+
+    private void getMovieDetails() {
+        manager.getTrailersForMovie(mMovie.getId());
+        manager.getReviewsForMovie(mMovie.getId());
     }
 
     private void configure() {
@@ -42,5 +54,15 @@ public class MovieDetailsActivity extends AppCompatActivity {
         mOverviewTextView.setText(mMovie.getOverview());
         String avg = String.valueOf(mMovie.getVoteAvg());
         mAvgVote.setText(String.valueOf(mMovie.getVoteAvg()));
+    }
+
+    @Override
+    public void reviewsFetchted(int movieId, ArrayList<Review> reviews) {
+
+    }
+
+    @Override
+    public void trailersFetchted(int movieId, ArrayList<Trailer> trailers) {
+
     }
 }
