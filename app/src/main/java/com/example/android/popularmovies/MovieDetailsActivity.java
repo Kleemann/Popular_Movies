@@ -25,6 +25,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
     TextView mOverviewTextView;
     TextView mAvgVote;
     MovieManager manager = new MovieManager(null, this);
+
+    ArrayList<Trailer> displayedTrailers;
+    ArrayList<Review> displayedReviews;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +63,11 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
 
     @Override
     public void reviewsFetchted(int movieId, ArrayList<Review> reviews) {
-
+        this.displayedReviews = reviews;
     }
 
     @Override
     public void trailersFetchted(int movieId, ArrayList<Trailer> trailers) {
-
+        this.displayedTrailers = trailers;
     }
 }

@@ -31,7 +31,7 @@ public class MovieManager {
     private final static String MOVIE_PATH = "movies";
     private final static String TRAILER_PATH = "videos";
     private final static String REVIEW_PATH = "reviews";
-    private final static String API_KEY = "YOUR_API_KEY";
+    private final static String API_KEY = "3316f56d2fce80d099bd8b9497b4a544";
     private final MovieManagerListener mListener;
     private final MovieManagerDetailsListener mDetailsListener;
 
@@ -53,6 +53,9 @@ public class MovieManager {
 
     void getMovies(String sorting) {
         mSorting = sorting;
+        if (mSorting == MovieSorting.FAVORITES) {
+            return;
+        }
         URL url = this.buildURL();
         JSONObject j = null;
         ArrayList<Movie> movies = null;
@@ -83,7 +86,7 @@ public class MovieManager {
             e.printStackTrace();
         }
         Log.d(TAG, String.valueOf(j));
-        if (mListener != null) {
+        if (mDetailsListener != null) {
             mDetailsListener.trailersFetchted(movieId, trailers);
         }
     }
@@ -101,8 +104,7 @@ public class MovieManager {
             e.printStackTrace();
         }
         Log.d(TAG, String.valueOf(j));
-        if (mListener != null) {
-
+        if (mDetailsListener != null) {
             mDetailsListener.reviewsFetchted(movieId, reviews);
         }
     }

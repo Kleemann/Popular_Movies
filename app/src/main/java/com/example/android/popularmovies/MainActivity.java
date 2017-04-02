@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
         int selected = item.getItemId();
         if (selected == R.id.menuSortPopular) {getMovies(MovieSorting.POPULAR);}
         else if (selected == R.id.menuSortTop){getMovies(MovieSorting.TOP_RATED);}
+        else if (selected == R.id.menuFavorites) {
+            getMovies(MovieSorting.FAVORITES);
+        }
         return true;
     }
 }
