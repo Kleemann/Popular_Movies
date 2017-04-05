@@ -17,7 +17,7 @@ import com.example.android.popularmovies.Models.Movie;
  */
 
 public class MovieContentProvider extends ContentProvider {
-    private static final UriMatcher sUriMatcher = UriMatcher.bui;
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MoviesDBHelper mOpenHelper;
 
     private static final int MOVIE = 100;

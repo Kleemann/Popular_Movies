@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieManager.MovieManagerListener {
 
-    MovieManager manager = new MovieManager(this, null);
+    MovieManager manager = new MovieManager(this, null, this);
     GridView gridView;
     private String mCurrentSorting;
 

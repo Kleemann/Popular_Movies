@@ -1,9 +1,17 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
+import com.example.android.popularmovies.Database.MovieContract;
 import com.example.android.popularmovies.Models.Movie;
 import com.example.android.popularmovies.Models.Review;
 import com.example.android.popularmovies.Models.Trailer;
@@ -14,6 +22,7 @@ import com.example.android.popularmovies.Networking.TrailerParser;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,7 +31,7 @@ import static android.content.ContentValues.TAG;
 
 
 
-public class MovieManager {
+public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String mSorting;
     private NetworkManager mFetcher;
@@ -34,6 +43,7 @@ public class MovieManager {
     private final static String API_KEY = "3316f56d2fce80d099bd8b9497b4a544";
     private final MovieManagerListener mListener;
     private final MovieManagerDetailsListener mDetailsListener;
+    private final Context mContext;
 
 
 
@@ -45,31 +55,58 @@ public class MovieManager {
         void reviewsFetchted(int movieId, ArrayList<Review> reviews);
     }
 
-    public MovieManager(MovieManagerListener listener,MovieManagerDetailsListener detailsListener) {
+    public MovieManager(MovieManagerListener listener, MovieManagerDetailsListener detailsListener, Context context) {
         this.mListener = listener;
         this.mDetailsListener = detailsListener;
+        this.mContext = context;
     }
 
 
     void getMovies(String sorting) {
         mSorting = sorting;
-        if (mSorting == MovieSorting.FAVORITES) {
-            return;
-        }
-        URL url = this.buildURL();
-        JSONObject j = null;
         ArrayList<Movie> movies = null;
-        try {
-            j = new MovieQueryTask().execute(url).get();
-            movies = MovieParser.parse(j);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (mSorting == MovieSorting.FAVORITES) {
+            movies = getFavoriteMovies();
+        } else {
+            URL url = this.buildURL();
+            JSONObject j = null;
 
-        Log.d(TAG, String.valueOf(j));
+            try {
+                j = new MovieQueryTask().execute(url).get();
+                movies = MovieParser.parse(j);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         if (mListener != null) {
             mListener.moviesFetches(movies);
         }
+    }
+
+    private ArrayList<Movie> getFavoriteMovies() {
+        Cursor c = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry.COLUMN_TITLE);
+        ArrayList<Movie> movies = new ArrayList<Movie>();
+        try {
+            while (c.moveToNext()) {
+                Movie m = new Movie();
+                m.setTitle(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
+                m.setId(c.getInt(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+                m.setOverview(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)));
+                m.setReleaseDate(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_YEAR)));
+
+                movies.add(m);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+
+        return movies;
     }
 
     void getTrailersForMovie(int movieId) {
@@ -156,4 +193,56 @@ public class MovieManager {
         }
 
     }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<Cursor>(mContext) {
+
+            Cursor mMovieData = null;
+
+            @Override
+            protected void onStartLoading() {
+                if (mMovieData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mMovieData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    return mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            MovieContract.MovieEntry.COLUMN_TITLE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public void deliverResult(Cursor data) {
+                mMovieData = data;
+                super.deliverResult(data);
+            }
+        };
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.e("onLoadFinished", " ");
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }
+
+

@@ -11,13 +11,13 @@ import android.provider.BaseColumns;
 
 public final class MovieContract {
 
-    public static final String CONTENT_AUTHORITY = "dk.kleemann.android.movies.app";
+    public static final String CONTENT_AUTHORITY = "com.example.android.popularmovies";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     private MovieContract() {}
 
     public static class MovieEntry implements BaseColumns {
-        public static final String TABLE_NAME = "entry";
+        public static final String TABLE_NAME = "movies";
         public static final String COLUMN_MOVIE_ID = "movieId";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_OVERVIEW = "overview";
