@@ -1,14 +1,10 @@
 package com.example.android.popularmovies;
 
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.example.android.popularmovies.Database.MovieContract;
@@ -19,10 +15,10 @@ import com.example.android.popularmovies.Networking.MovieParser;
 import com.example.android.popularmovies.Networking.NetworkManager;
 import com.example.android.popularmovies.Networking.ReviewParser;
 import com.example.android.popularmovies.Networking.TrailerParser;
+import com.example.android.popularmovies.Util.MovieTrailerSite;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +36,7 @@ public class MovieManager {
     private final static String MOVIE_PATH = "movies";
     private final static String TRAILER_PATH = "videos";
     private final static String REVIEW_PATH = "reviews";
-    private final static String API_KEY = "3316f56d2fce80d099bd8b9497b4a544";
+    private final static String API_KEY = "YOUR_API_KEY";
     private final MovieManagerListener mListener;
     private final MovieManagerDetailsListener mDetailsListener;
     private final Context mContext;
@@ -149,6 +145,25 @@ public class MovieManager {
 
     }
 
+    public void watchTrailer(Trailer trailer) {
+        String urlString = buildURLStringForTrailer(trailer);
+        if (urlString != null) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(urlString));
+            mContext.startActivity(i);
+        }
+
+    }
+
+    private String buildURLStringForTrailer(Trailer trailer) {
+        //Add more sites if needed
+        if (trailer.getSite().equals(MovieTrailerSite.YOUTUBE)) {
+            return "https://www.youtube.com/watch?v=" + trailer.getKey();
+        }
+
+        return null;
+    }
+
     class MovieQueryTask extends AsyncTask<URL, Void, JSONObject> {
 
         @Override
@@ -164,5 +179,3 @@ public class MovieManager {
 
     }
 }
-
-

@@ -17,11 +17,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetailsActivity"></activity>
+        <activity android:name=".MovieDetailsActivity" />
+
         <provider
+            android:name=".Database.MovieContentProvider"
             android:authorities="com.example.android.popularmovies"
-            android:name="com.example.android.popularmovies.Database.MovieContentProvider"
-            android:exported="false"/>
+            android:exported="false" />
+
     </application>
 
 </manifest>

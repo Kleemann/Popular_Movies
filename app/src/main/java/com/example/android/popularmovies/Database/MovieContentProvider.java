@@ -61,11 +61,17 @@ public class MovieContentProvider extends ContentProvider {
                 return ret;
             }
             case MOVIE_WITH_ID: {
+                String id = uri.getPathSegments().get(1);
+
+
+                String mSelection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+                String[] mSelectionArgs = new String[]{id};
+
                 ret = mOpenHelper.getReadableDatabase().query(
                         MovieContract.MovieEntry.TABLE_NAME,
                         strings,
-                        MovieContract.MovieEntry._ID + "= ?",
-                        new String[] {String.valueOf(ContentUris.parseId(uri))},
+                        mSelection,
+                        mSelectionArgs,
                         null,
                         null,
                         s1
@@ -121,7 +127,7 @@ public class MovieContentProvider extends ContentProvider {
                 break;
             case MOVIE_WITH_ID:
                 deletedCount = db.delete(MovieContract.MovieEntry.TABLE_NAME,
-                        MovieContract.MovieEntry._ID + " = ?",
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
                         new String[]{String.valueOf(ContentUris.parseId(uri))});
                 db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
                         MovieContract.MovieEntry.TABLE_NAME + "'");
@@ -154,7 +160,7 @@ public class MovieContentProvider extends ContentProvider {
             case MOVIE_WITH_ID: {
                 numUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME,
                         contentValues,
-                        MovieContract.MovieEntry._ID + " = ?",
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
                         new String[] {String.valueOf(ContentUris.parseId(uri))});
                 break;
             }

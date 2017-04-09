@@ -22,7 +22,7 @@ public class TrailerParser {
                 Trailer t = new Trailer();
                 JSONObject trailerJSON = jsonArray.getJSONObject(i);
 
-                t.setKey(trailerJSON.getString("type"));
+                t.setKey(trailerJSON.getString("key"));
                 t.setName(trailerJSON.getString("name"));
                 t.setSite(trailerJSON.getString("site"));
                 t.setType(trailerJSON.getString("type"));

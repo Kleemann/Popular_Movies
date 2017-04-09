@@ -2,11 +2,8 @@ package com.example.android.popularmovies;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.nfc.Tag;
 import android.support.v4.content.Loader;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,14 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.Database.MovieContract;
 import com.example.android.popularmovies.Models.Movie;
-import com.example.android.popularmovies.Models.Trailer;
+import com.example.android.popularmovies.Util.MovieSorting;
+import com.example.android.popularmovies.Util.MoviesAdapter;
 
-import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieManager.MovieManagerListener, LoaderManager.LoaderCallbacks<Cursor> {

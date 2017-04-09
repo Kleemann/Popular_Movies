@@ -7,4 +7,11 @@
     <string name="title_text">Title:</string>
     <string name="overview_text">Overview:</string>
     <string name="avgVote_text">Avg. vote:</string>
+    <string name="trailers_button_text">Watch Trailers</string>
+    <string name="reviews_button_text">Read Reviews</string>
+    <string name="mark_favorite_button_text">Marks as favorite</string>
+    <string name="remove_favorite_button_text">Remove from favorites</string>
+    <string name="general_cancel">Cancel</string>
+    <string name="marked_as_favorite_toast_text">Marked as favorite</string>
+    <string name="deleted_from_favorites_toast_text">Deleted from favorites</string>
 </resources>

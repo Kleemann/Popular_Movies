@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.Util;
 
 /**
  * Created by makle on 29/01/2017.

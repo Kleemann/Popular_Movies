@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.Util;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.Models.Movie;
+import com.example.android.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
