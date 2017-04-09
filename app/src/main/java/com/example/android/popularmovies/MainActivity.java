@@ -1,8 +1,13 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.nfc.Tag;
+import android.support.v4.content.Loader;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.Database.MovieContract;
 import com.example.android.popularmovies.Models.Movie;
 import com.example.android.popularmovies.Models.Trailer;
 
@@ -20,7 +26,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MovieManager.MovieManagerListener {
+public class MainActivity extends AppCompatActivity implements MovieManager.MovieManagerListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     MovieManager manager = new MovieManager(this, null, this);
     GridView gridView;
@@ -43,6 +49,14 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
         });
 
         getMovies(MovieSorting.TOP_RATED);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mCurrentSorting == MovieSorting.FAVORITES) {
+            getSupportLoaderManager().restartLoader(0, null, this);
+        }
     }
 
     private void getMovies(String sorting) {
@@ -69,8 +83,77 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
         if (selected == R.id.menuSortPopular) {getMovies(MovieSorting.POPULAR);}
         else if (selected == R.id.menuSortTop){getMovies(MovieSorting.TOP_RATED);}
         else if (selected == R.id.menuFavorites) {
-            getMovies(MovieSorting.FAVORITES);
+            mCurrentSorting = MovieSorting.FAVORITES;
+            getSupportLoaderManager().initLoader(0, null, this);
         }
         return true;
+    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<Cursor>(this.getBaseContext()) {
+
+            Cursor mMovieData = null;
+
+            @Override
+            protected void onStartLoading() {
+                if (mMovieData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mMovieData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    return getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            MovieContract.MovieEntry.COLUMN_TITLE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public void deliverResult(Cursor data) {
+                mMovieData = data;
+                super.deliverResult(data);
+            }
+        };
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor c) {
+        ArrayList<Movie> movies = new ArrayList<Movie>();
+        try {
+            while (c.moveToNext()) {
+                Movie m = new Movie();
+                m.setTitle(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
+                m.setId(c.getInt(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
+                m.setOverview(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)));
+                m.setReleaseDate(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_YEAR)));
+                m.setPosterPath(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH)));
+                m.setVoteAvg(c.getDouble(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_AVG_VOTE)));
+                movies.add(m);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        final MoviesAdapter adapter = new MoviesAdapter(this, movies);
+        gridView.setAdapter(adapter);
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.e("onLoaderReset", " ");
     }
 }

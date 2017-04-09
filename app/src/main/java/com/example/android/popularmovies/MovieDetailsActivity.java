@@ -6,7 +6,10 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,11 +33,9 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
     TextView mYeatTextView;
     TextView mOverviewTextView;
     TextView mAvgVote;
+    ListView mTrailersList;
+    ListView mReviewsList;
     MovieManager manager = new MovieManager(null, this, this);
-
-    ArrayList<Trailer> displayedTrailers;
-    ArrayList<Review> displayedReviews;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
         mYeatTextView = (TextView) findViewById(R.id.year);
         mOverviewTextView = (TextView) findViewById(R.id.overview);
         mAvgVote = (TextView) findViewById(R.id.avgVote);
+        mTrailersList = (ListView) findViewById(R.id.trailers);
+        mReviewsList = (ListView) findViewById(R.id.reviews);
         configure();
         mPosterImageView.setClickable(true);
         mPosterImageView.setOnClickListener(new View.OnClickListener() {
@@ -58,13 +61,24 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
                 v.put(MovieContract.MovieEntry.COLUMN_TITLE, mMovie.getTitle());
                 v.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, mMovie.getOverview());
                 v.put(MovieContract.MovieEntry.COLUMN_RELEASE_YEAR, mMovie.getReleaseDate());
+                v.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, mMovie.getPosterPath());
+                v.put(MovieContract.MovieEntry.COLUMN_AVG_VOTE, mMovie.getVoteAvg());
                 Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, v);
                 if (uri != null) {
                     Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
                 }
-                finish();
             }
         });
+
+        mTrailersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Trailer t = (Trailer) mTrailersList.getAdapter().getItem(i);
+
+            }
+        });
+
+
        getMovieDetails();
     }
 
@@ -83,12 +97,14 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
     }
 
     @Override
-    public void reviewsFetchted(int movieId, ArrayList<Review> reviews) {
-        this.displayedReviews = reviews;
+    public void reviewsFetched(int movieId, ArrayList<Review> reviews) {
+        final ReviewAdapter adapter = new ReviewAdapter(this, reviews);
+        mReviewsList.setAdapter(adapter);
     }
 
     @Override
-    public void trailersFetchted(int movieId, ArrayList<Trailer> trailers) {
-        this.displayedTrailers = trailers;
+    public void trailersFetched(int movieId, ArrayList<Trailer> trailers) {
+        final TrailerAdapter adapter = new TrailerAdapter(this, trailers);
+        mTrailersList.setAdapter(adapter);
     }
 }

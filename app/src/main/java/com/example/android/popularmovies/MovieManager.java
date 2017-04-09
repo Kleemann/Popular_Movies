@@ -31,7 +31,7 @@ import static android.content.ContentValues.TAG;
 
 
 
-public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieManager {
 
     private String mSorting;
     private NetworkManager mFetcher;
@@ -51,8 +51,8 @@ public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
         void moviesFetches(ArrayList<Movie> movies);
     }
     public interface MovieManagerDetailsListener {
-        void trailersFetchted(int movieId, ArrayList<Trailer> trailers);
-        void reviewsFetchted(int movieId, ArrayList<Review> reviews);
+        void trailersFetched(int movieId, ArrayList<Trailer> trailers);
+        void reviewsFetched(int movieId, ArrayList<Review> reviews);
     }
 
     public MovieManager(MovieManagerListener listener, MovieManagerDetailsListener detailsListener, Context context) {
@@ -65,48 +65,18 @@ public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
     void getMovies(String sorting) {
         mSorting = sorting;
         ArrayList<Movie> movies = null;
-        if (mSorting == MovieSorting.FAVORITES) {
-            movies = getFavoriteMovies();
-        } else {
-            URL url = this.buildURL();
-            JSONObject j = null;
+        URL url = this.buildURL();
+        JSONObject j = null;
 
-            try {
-                j = new MovieQueryTask().execute(url).get();
-                movies = MovieParser.parse(j);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            j = new MovieQueryTask().execute(url).get();
+            movies = MovieParser.parse(j);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         if (mListener != null) {
             mListener.moviesFetches(movies);
         }
-    }
-
-    private ArrayList<Movie> getFavoriteMovies() {
-        Cursor c = mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                MovieContract.MovieEntry.COLUMN_TITLE);
-        ArrayList<Movie> movies = new ArrayList<Movie>();
-        try {
-            while (c.moveToNext()) {
-                Movie m = new Movie();
-                m.setTitle(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)));
-                m.setId(c.getInt(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
-                m.setOverview(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)));
-                m.setReleaseDate(c.getString(c.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_YEAR)));
-
-                movies.add(m);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            c.close();
-        }
-
-        return movies;
     }
 
     void getTrailersForMovie(int movieId) {
@@ -124,7 +94,7 @@ public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
         }
         Log.d(TAG, String.valueOf(j));
         if (mDetailsListener != null) {
-            mDetailsListener.trailersFetchted(movieId, trailers);
+            mDetailsListener.trailersFetched(movieId, trailers);
         }
     }
 
@@ -142,7 +112,7 @@ public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
         }
         Log.d(TAG, String.valueOf(j));
         if (mDetailsListener != null) {
-            mDetailsListener.reviewsFetchted(movieId, reviews);
+            mDetailsListener.reviewsFetched(movieId, reviews);
         }
     }
 
@@ -191,56 +161,6 @@ public class MovieManager implements LoaderManager.LoaderCallbacks<Cursor> {
             }
             return json;
         }
-
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<Cursor>(mContext) {
-
-            Cursor mMovieData = null;
-
-            @Override
-            protected void onStartLoading() {
-                if (mMovieData != null) {
-                    // Delivers any previously loaded data immediately
-                    deliverResult(mMovieData);
-                } else {
-                    // Force a new load
-                    forceLoad();
-                }
-            }
-
-            @Override
-            public Cursor loadInBackground() {
-                try {
-                    return mContext.getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            MovieContract.MovieEntry.COLUMN_TITLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            @Override
-            public void deliverResult(Cursor data) {
-                mMovieData = data;
-                super.deliverResult(data);
-            }
-        };
-
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e("onLoadFinished", " ");
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 }

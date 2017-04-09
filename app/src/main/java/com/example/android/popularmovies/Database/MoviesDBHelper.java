@@ -29,6 +29,8 @@ public class MoviesDBHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL,  " +
                 MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_OVERVIEW + " TEXT, " +
+                MovieContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT, " +
+                MovieContract.MovieEntry.COLUMN_AVG_VOTE + " DOUBLE NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_RELEASE_YEAR + " TEXT NOT NULL); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE);
