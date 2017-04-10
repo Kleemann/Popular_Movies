@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -161,6 +162,15 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
 
             }
         });
+        dialogBuilder.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialog.dismiss();
+                }
+                return true;
+            }
+        });
         dialogBuilder.setTitle(R.string.trailers_button_text);
         dialogBuilder.setCancelable(false);
 
@@ -181,6 +191,15 @@ public class MovieDetailsActivity extends AppCompatActivity implements MovieMana
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
+            }
+        });
+        dialogBuilder.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    dialog.dismiss();
+                }
+                return true;
             }
         });
         dialogBuilder.setTitle(R.string.reviews_button_text);
