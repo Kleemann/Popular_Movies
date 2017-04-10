@@ -1,5 +1,5 @@
 # Popular_Movies
-Associate Android Developer Fast Track Project 1
+Associate Android Developer Fast Track Project 1 & 2
 
 
-Place [The Movie DB](https://www.themoviedb.org/) API key in MovieManager where it says "YOUR_API_KEY" on line 61
+Place [The Movie DB](https://www.themoviedb.org/) API key in MovieManager where it says "YOUR_API_KEY" on line 39
