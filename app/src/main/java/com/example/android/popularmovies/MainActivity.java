@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
     MovieManager manager = new MovieManager(this, null, this);
     GridView gridView;
     private String mCurrentSorting;
+    private static final String LIFECYCLE_CALLBACK_SORTING_KEY = "sortingKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +43,11 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
                 startActivity(startMovieDetails);
             }
         });
-
-        getMovies(MovieSorting.TOP_RATED);
+        if (savedInstanceState != null && savedInstanceState.containsKey(LIFECYCLE_CALLBACK_SORTING_KEY)) {
+            getMovies(savedInstanceState.getString(LIFECYCLE_CALLBACK_SORTING_KEY));
+        } else {
+            getMovies(MovieSorting.TOP_RATED);
+        }
     }
 
     @Override
@@ -52,6 +56,12 @@ public class MainActivity extends AppCompatActivity implements MovieManager.Movi
         if (mCurrentSorting == MovieSorting.FAVORITES) {
             getSupportLoaderManager().restartLoader(0, null, this);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(LIFECYCLE_CALLBACK_SORTING_KEY, mCurrentSorting);
     }
 
     private void getMovies(String sorting) {
